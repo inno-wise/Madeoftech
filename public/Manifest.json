@@ -1,0 +1,21 @@
+{
+  "name": "Madeoftech",
+  "short_name": "Madeoftech",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ff6347",
+  "theme_color": "#ff4500",
+  "description": "Learn web dev, cybersecurity, and DevOps with Madeoftech",
+  "icons": [
+    {
+      "src": "/logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
