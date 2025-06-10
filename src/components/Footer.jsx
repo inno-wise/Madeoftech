@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 const Footer = () => {
   return (
     <motion.footer
-      className="bg-gray-900 text-gray-400 py-6 mt-12 w-full"
+      // Matched background color to the header (Tomato) and text color to white
+      className="bg-[#FF6347] text-white py-6 mt-12 w-full"
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: "easeOut", delay: 0.8 }} // Delayed to appear after content
