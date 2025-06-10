@@ -186,14 +186,23 @@ const Chatbox = () => {
         )}
       </div>
       <div className="p-4 border-t border-gray-700 flex">
-        <input
-          type="text"
-          className="flex-grow p-2 rounded-l-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" // Changed ring color
-          placeholder="Type a message..."
-          value={inputMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-        />
+  <input
+    type="text"
+    className="flex-grow p-2 rounded-l-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+    placeholder="Type a message..."
+    value={inputMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
+    onKeyPress={(e) => {
+      if (e.key === 'Enter') sendMessage();
+    }}
+  />
+  <button
+    onClick={sendMessage}
+    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-r-lg"
+  >
+    Send
+  </button>
+</div>
         <motion.button
           onClick={sendMessage}
           className="px-4 py-2 bg-green-600 text-white rounded-r-lg hover:bg-green-700 transition-colors"
