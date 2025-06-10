@@ -417,7 +417,7 @@ function App() {
                 {Array.from({ length: 25 }).map((_, i) => {
                     const RandomIcon = lucideBackgroundIcons[Math.floor(Math.random() * lucideBackgroundIcons.length)];
                     const size = `${Math.random() * 60 + 30}px`; // Size between 30px and 90px
-                    const colorIndex = Math.floor(Math.random() * 3);
+                    //const colorIndex = Math.floor(Math.random() * 3);
                     const bgColor = i % 2 === 0 ? colors.tomatoLighter : colors.tomatoLight;
                     const borderRadius = Math.random() > 0.5 ? '50%' : '10%'; // Randomly round or square
 
