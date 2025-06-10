@@ -1,0 +1,17 @@
+body.dark-mode {
+  background-color: #121212;
+  color: #ddd;
+}
+
+body.dark-mode h1 {
+  color: #4caf50; /* green */
+}
+
+body.dark-mode main p {
+  color: #ccc;
+}
+
+body.dark-mode .toggle-dark-mode {
+  background: tomato;
+  color: #121212;
+}

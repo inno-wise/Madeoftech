@@ -1,0 +1,39 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #fff;
+  color: #222;
+  margin: 0;
+  padding: 0 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1 {
+  color: tomato;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.toggle-dark-mode {
+  background: green;
+  border: none;
+  color: white;
+  padding: 10px;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+main {
+  max-width: 800px;
+  margin: 3rem auto 4rem;
+  text-align: center;
+}
+
+button:focus {
+  outline: 2px solid tomato;
+  outline-offset: 2px;
+}
