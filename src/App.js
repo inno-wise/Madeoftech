@@ -346,7 +346,7 @@ const Blog = () => {
               <p className="text-sm text-gray-300 mb-3 flex-grow">{post.excerpt}</p>
               <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-600">
                 <span className="text-xs font-semibold px-2 py-1 bg-gray-600 rounded-full text-gray-400">{post.date}</span>
-                <a href="#" className="text-tomato-400 hover:underline font-medium text-sm">Read More →</a> {/* Changed to tomato-400 */}
+                <a href="www.madeoftech.godaddysites.com" className="text-tomato-400 hover:underline font-medium text-sm">Read More →</a> {/* Changed to tomato-400 */}
               </div>
             </div>
           </motion.article>
@@ -518,7 +518,7 @@ const Projects = () => {
                   ))}
                 </div>
               </div>
-              <a href="#" className="mt-4 inline-block text-tomato-400 hover:underline font-medium text-sm">View Project →</a> {/* Changed to tomato-400 */}
+              <a href="www.madeoftech.net\projects" className="mt-4 inline-block text-tomato-400 hover:underline font-medium text-sm">View Project →</a> {/* Changed to tomato-400 */}
             </div>
           </motion.article>
         ))}
