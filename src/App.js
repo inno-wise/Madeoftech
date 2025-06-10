@@ -211,7 +211,7 @@ const Chatbox = () => {
         >
           {getAppIcon('Zap', 20)}
         </motion.button>
-      </div>
+      
     </motion.section>
   );
 };
