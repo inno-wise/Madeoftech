@@ -1,14 +1,50 @@
-import React, { useEffect, useRef } from 'react';
+// src/components/Header.jsx
+
+import React, { useRef } from 'react'; // useEffect is not used in Header, removed from import
 import { motion, useInView } from 'framer-motion';
 import {
   ShieldCheck, LayoutTemplate, FileText, Code, Bot, Fingerprint, // Icons for categories
-  Home, GraduationCap // Replaced Font Awesome icons with Lucide icons
+  Home, GraduationCap, // Used in Header component
+  // Removed BookOpen from imports as it's not used in this file
 } from 'lucide-react';
 
-// Define a custom color 'tomato' for Tailwind CSS
-// This would ideally be in tailwind.config.js, but for a single immersive,
-// we'll define it as a utility class or apply direct styles.
-// For demonstration, I'll use inline styles and apply a custom CSS variable.
+// --- CategoryCard Component (New) ---
+// This component encapsulates the logic for a single category card,
+// including its own useRef and useInView hooks for individual animation.
+const CategoryCard = ({ category, index, cardVariants }) => {
+  const ref = useRef(null);
+  // useInView hook is correctly called at the top level of CategoryCard component
+  const inView = useInView(ref, { once: true, amount: 0.3 }); // Trigger when 30% of item is visible
+
+  return (
+    <motion.div
+      ref={ref}
+      key={index}
+      className="bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-6 sm:p-8 flex flex-col items-start space-y-4 border border-gray-700 cursor-pointer"
+      variants={cardVariants}
+      initial="hidden"
+      // Animate based on the 'inView' state from useInView
+      animate={inView ? "visible" : "hidden"}
+      transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }} // Click animation for the card
+    >
+      <div className="p-3 bg-gray-700 rounded-full text-white flex items-center justify-center shadow-md">
+        {category.icon}
+      </div>
+      <h2 className="text-2xl font-bold text-gray-50">{category.title}</h2>
+      <p className="text-gray-300 leading-relaxed text-sm sm:text-base">{category.description}</p>
+      <motion.button
+        className="mt-auto px-5 py-2 bg-[#FF6347] text-white rounded-lg shadow-md hover:bg-[#CD5C5C] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#FF6347] focus:ring-opacity-75"
+        whileHover={{ scale: 1.05, boxShadow: "0px 0px 8px rgba(255,99,71,0.5)" }}
+        whileTap={{ scale: 0.95 }} // Click animation for the button
+      >
+        Learn More
+      </motion.button>
+    </motion.div>
+  );
+};
+
 
 // Header Component
 const Header = () => {
@@ -129,37 +165,15 @@ function App() {
           Your comprehensive resource for cybersecurity, creative design, web development, and digital investigation.
         </motion.p>
 
-        {categories.map((category, index) => {
-          const ref = useRef(null);
-          const inView = useInView(ref, { once: true, amount: 0.3 }); // Trigger when 30% of item is visible
-
-          return (
-            <motion.div
-              ref={ref}
-              key={index}
-              className="bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-6 sm:p-8 flex flex-col items-start space-y-4 border border-gray-700 cursor-pointer"
-              variants={cardVariants}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }} // Click animation for the card
-            >
-              <div className="p-3 bg-gray-700 rounded-full text-white flex items-center justify-center shadow-md">
-                {category.icon}
-              </div>
-              <h2 className="text-2xl font-bold text-gray-50">{category.title}</h2>
-              <p className="text-gray-300 leading-relaxed text-sm sm:text-base">{category.description}</p>
-              <motion.button
-                className="mt-auto px-5 py-2 bg-[#FF6347] text-white rounded-lg shadow-md hover:bg-[#CD5C5C] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#FF6347] focus:ring-opacity-75"
-                whileHover={{ scale: 1.05, boxShadow: "0px 0px 8px rgba(255,99,71,0.5)" }}
-                whileTap={{ scale: 0.95 }} // Click animation for the button
-              >
-                Learn More
-              </motion.button>
-            </motion.div>
-          );
-        })}
+        {/* Render Category Cards using the new component */}
+        {categories.map((category, index) => (
+          <CategoryCard
+            key={index} // Using index as key is generally fine for static lists without reordering
+            category={category}
+            index={index}
+            cardVariants={cardVariants}
+          />
+        ))}
       </main>
     </div>
   );
