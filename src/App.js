@@ -1,7 +1,4 @@
-// App.js
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
+import React from 'react';
 import Auth from './components/Auth';
 import Blog from './components/Blog';
 import Chatbox from './components/Chatbox';
@@ -15,34 +12,25 @@ import Quiz from './components/Quiz';
 import Skills from './components/Skills';
 import VideoSection from './components/VideoSection';
 
-function App() {
-  // Simulated authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+const App = () => {
   return (
-    <Router>
-      <div className="App">
-        <Header />
+    <div>
+      <Header />
+      <main>
+        <Auth />
+        <Blog />
+        <Chatbox />
+        <Comments />
         <LanguageSwitcher />
-
-        <Routes>
-          <Route path="/" element={<VideoSection />} />
-          <Route path="/auth" element={<Auth onLogin={() => setIsAuthenticated(true)} />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/chat" element={isAuthenticated ? <Chatbox /> : <Navigate to="/auth" />} />
-          <Route path="/comments" element={<Comments />} />
-          <Route path="/newsletter" element={<NewsletterForm />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/skills" element={<Skills />} />
-          <Route path="/videos" element={<VideoSection />} />
-          <Route path="*" element={<h2>404 - Not Found</h2>} />
-        </Routes>
-
-        <Footer />
-      </div>
-    </Router>
+        <NewsletterForm />
+        <Projects />
+        <Quiz />
+        <Skills />
+        <VideoSection />
+      </main>
+      <Footer />
+    </div>
   );
-}
+};
 
 export default App;
