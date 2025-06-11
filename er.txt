@@ -1,1 +1,64 @@
 
+Failed to compile.
+                                                                        [eslint]                                                                src/components/Blog.jsx
+  Line 451:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 452:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks                                                                                                 src/components/Header.jsx
+  Line 133:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 134:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks                                                                                                 src/components/Projects.jsx
+  Line 82:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 83:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks                                                                                                  src/components/Skills.jsx
+  Line 92:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 93:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+Search for the keywords to learn more about each error.                 WARNING in [eslint]
+src/components/Auth.jsx                                                   Line 311:6:  React Hook useCallback has an unnecessary dependency: 'failedAuthAttempts'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps                                                
+src/components/Blog.jsx                                                   Line 5:3:   'BookOpen' is defined but never used      no-unused-vars
+  Line 5:60:  'PenTool' is defined but never used       no-unused-vars    Line 6:52:  'Mail' is defined but never used          no-unused-vars
+  Line 6:58:  'CheckCircle2' is defined but never used  no-unused-vars
+
+src/components/Header.jsx
+  Line 1:17:  'useEffect' is defined but never used  no-unused-vars
+
+src/components/Projects.jsx
+  Line 5:3:   'Code' is defined but never used            no-unused-vars
+  Line 5:34:  'LayoutTemplate' is defined but never used  no-unused-vars
+  Line 5:59:  'Globe' is defined but never used           no-unused-vars
+  Line 5:66:  'Server' is defined but never used          no-unused-vars
+  Line 5:74:  'Database' is defined but never used        no-unused-vars
+
+src/components/Quiz.jsx
+  Line 2:38:  'useRef' is defined but never used      no-unused-vars
+  Line 4:17:  'Code' is defined but never used        no-unused-vars
+  Line 4:23:  'Shield' is defined but never used      no-unused-vars
+  Line 4:31:  'HelpCircle' is defined but never used  no-unused-vars
+  Line 4:56:  'XCircle' is defined but never used     no-unused-vars
+  Line 4:73:  'User' is defined but never used        no-unused-vars
+  Line 4:79:  'Play' is defined but never used        no-unused-vars
+
+src/components/Skills.jsx
+  Line 5:17:  'Server' is defined but never used    no-unused-vars
+  Line 5:25:  'Bug' is defined but never used       no-unused-vars
+  Line 5:30:  'Search' is defined but never used    no-unused-vars
+  Line 5:65:  'PenTool' is defined but never used   no-unused-vars
+  Line 5:79:  'Database' is defined but never used  no-unused-vars
+
+ERROR in [eslint]
+src/components/Blog.jsx
+  Line 451:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 452:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+src/components/Header.jsx
+  Line 133:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 134:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+src/components/Projects.jsx
+  Line 82:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 83:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+src/components/Skills.jsx
+  Line 92:23:  React Hook "useRef" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function     react-hooks/rules-of-hooks
+  Line 93:26:  React Hook "useInView" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+Search for the keywords to learn more about each error.
+
+webpack compiled with 1 error and 1 warning
