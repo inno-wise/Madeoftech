@@ -18,12 +18,12 @@ const App = () => {
       <Header />
       <main>
         
-        //<Blog />
+        
         <Chatbox />
         <Comments />
         <LanguageSwitcher />
         <NewsletterForm />
-        //<Projects />
+        
         
         <Skills />
         <VideoSection />
