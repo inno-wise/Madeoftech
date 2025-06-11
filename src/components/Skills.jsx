@@ -1,9 +1,55 @@
-// Placeholder content for Skills.jsx
+// src/components/Skills.jsx
+
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import {
-  Code, Shield, Server, Bug, Search, Laptop, Palette, BookText, PenTool, Bot, Database
+  Code, Shield, Laptop, Palette, BookText, Bot // Kept only used icons
+  // Removed unused icons like Server, Bug, Search, PenTool, Database from import
 } from 'lucide-react';
+
+// --- SkillCategoryCard Component (New) ---
+// This component encapsulates the logic for a single skill category card,
+// including its own useRef and useInView hooks for individual animation.
+const SkillCategoryCard = ({ category, index, categoryVariants, skillTagVariants }) => {
+  const ref = useRef(null);
+  // useInView hook is correctly called at the top level of SkillCategoryCard component
+  const inView = useInView(ref, { once: true, amount: 0.2 }); // Trigger when 20% of item is visible
+
+  return (
+    <motion.div
+      ref={ref}
+      key={index}
+      className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-start border border-gray-700"
+      variants={categoryVariants}
+      initial="hidden"
+      // Animate based on the 'inView' state from useInView
+      animate={inView ? "visible" : "hidden"}
+      transition={{ delay: index * 0.15 }}
+    >
+      <div className="p-3 bg-gray-700 rounded-full text-white mb-4 shadow-md">
+        {category.icon}
+      </div>
+      <h3 className="text-2xl font-bold text-gray-50 mb-4">{category.title}</h3>
+      <div className="flex flex-wrap gap-2">
+        {category.skills.map((skill, skillIndex) => (
+          <motion.span
+            key={skillIndex}
+            className="bg-gray-700 text-gray-200 text-sm px-3 py-1 rounded-full border border-gray-600 cursor-pointer hover:bg-[#CD5C5C] transition-colors duration-200"
+            variants={skillTagVariants}
+            initial="hidden"
+            animate={inView ? "visible" : "hidden"} // Animate skill tags when category is in view
+            transition={{ delay: index * 0.15 + skillIndex * 0.05 }}
+            whileHover={{ scale: 1.05, boxShadow: "0px 0px 6px rgba(255,99,71,0.3)" }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {skill}
+          </motion.span>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
 
 // Skills Component
 const Skills = () => {
@@ -88,43 +134,15 @@ const Skills = () => {
       </motion.h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {skillCategories.map((category, index) => {
-          const ref = useRef(null);
-          const inView = useInView(ref, { once: true, amount: 0.2 }); // Trigger when 20% of item is visible
-
-          return (
-            <motion.div
-              ref={ref}
-              key={index}
-              className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-start border border-gray-700"
-              variants={categoryVariants}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
-              transition={{ delay: index * 0.15 }}
-            >
-              <div className="p-3 bg-gray-700 rounded-full text-white mb-4 shadow-md">
-                {category.icon}
-              </div>
-              <h3 className="text-2xl font-bold text-gray-50 mb-4">{category.title}</h3>
-              <div className="flex flex-wrap gap-2">
-                {category.skills.map((skill, skillIndex) => (
-                  <motion.span
-                    key={skillIndex}
-                    className="bg-gray-700 text-gray-200 text-sm px-3 py-1 rounded-full border border-gray-600 cursor-pointer hover:bg-[#CD5C5C] transition-colors duration-200"
-                    variants={skillTagVariants}
-                    initial="hidden"
-                    animate={inView ? "visible" : "hidden"} // Animate skill tags when category is in view
-                    transition={{ delay: index * 0.15 + skillIndex * 0.05 }}
-                    whileHover={{ scale: 1.05, boxShadow: "0px 0px 6px rgba(255,99,71,0.3)" }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {skill}
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
-          );
-        })}
+        {skillCategories.map((category, index) => (
+          <SkillCategoryCard
+            key={index} // Using index as key is generally fine for static lists without reordering
+            category={category}
+            index={index}
+            categoryVariants={categoryVariants}
+            skillTagVariants={skillTagVariants}
+          />
+        ))}
       </div>
     </div>
   );
