@@ -1,10 +1,53 @@
-// Placeholder content for Projects.jsx
+// src/components/Projects.jsx
+
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import {
-  Code, Shield, Bot, Microscope, LayoutTemplate, PenTool, Globe, Server, Database, Lock,
-  Palette // <--- Added Palette import here
-} from 'lucide-react'; // Icons for various project types
+  Code, Shield, Bot, Microscope, LayoutTemplate, PenTool, Lock,
+  Palette // Icons for various project types
+} from 'lucide-react'; // Removed unused icons like Globe, Server, Database from import
+
+// --- ProjectCard Component (New) ---
+// This component encapsulates the logic for a single project card,
+// including its own useRef and useInView hooks for individual animation.
+const ProjectCard = ({ project, index, cardVariants }) => {
+  const ref = useRef(null);
+  // useInView hook is correctly called at the top level of ProjectCard component
+  const inView = useInView(ref, { once: true, amount: 0.2 }); // Trigger when 20% of item is visible
+
+  return (
+    <motion.div
+      ref={ref}
+      key={index}
+      className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-start border border-gray-700 cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+      variants={cardVariants}
+      initial="hidden"
+      // Animate based on the 'inView' state from useInView
+      animate={inView ? "visible" : "hidden"}
+      transition={{ delay: index * 0.15 }} // Staggered animation
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <div className="p-3 bg-gray-700 rounded-full text-white mb-4 shadow-md">
+        {project.icon}
+      </div>
+      <h3 className="text-2xl font-bold text-gray-50 mb-3">{project.title}</h3>
+      <p className="text-gray-300 leading-relaxed text-sm mb-4">{project.description}</p>
+      <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-gray-700 w-full">
+        {project.tech.map((tech, techIndex) => (
+          <motion.span
+            key={techIndex}
+            className="bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-full border border-gray-600"
+            whileHover={{ scale: 1.05, backgroundColor: '#CD5C5C', color: '#fff' }}
+          >
+            {tech}
+          </motion.span>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
 
 // Projects Component
 const Projects = () => {
@@ -78,41 +121,14 @@ const Projects = () => {
       </motion.h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projectsData.map((project, index) => {
-          const ref = useRef(null);
-          const inView = useInView(ref, { once: true, amount: 0.2 }); // Trigger when 20% of item is visible
-
-          return (
-            <motion.div
-              ref={ref}
-              key={index}
-              className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-start border border-gray-700 cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-              variants={cardVariants}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
-              transition={{ delay: index * 0.15 }} // Staggered animation
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="p-3 bg-gray-700 rounded-full text-white mb-4 shadow-md">
-                {project.icon}
-              </div>
-              <h3 className="text-2xl font-bold text-gray-50 mb-3">{project.title}</h3>
-              <p className="text-gray-300 leading-relaxed text-sm mb-4">{project.description}</p>
-              <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-gray-700 w-full">
-                {project.tech.map((tech, techIndex) => (
-                  <motion.span
-                    key={techIndex}
-                    className="bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-full border border-gray-600"
-                    whileHover={{ scale: 1.05, backgroundColor: '#CD5C5C', color: '#fff' }}
-                  >
-                    {tech}
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
-          );
-        })}
+        {projectsData.map((project, index) => (
+          <ProjectCard
+            key={index} // Using index as key is generally fine for static lists without reordering
+            project={project}
+            index={index}
+            cardVariants={cardVariants}
+          />
+        ))}
       </div>
     </div>
   );
