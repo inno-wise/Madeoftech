@@ -1,9 +1,11 @@
-// Placeholder content for Blog.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion'; // <--- Added useInView import here
+// src/components/Blog.jsx
+
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
-  BookOpen, Shield, Code, Bot, Microscope, LayoutTemplate, PenTool, Calendar, User,
-  Heart, Share2, MessageCircle, ThumbsUp, XCircle, Mail, CheckCircle2 // Icons for blog categories, reactions, and modal
+  // Removed unused icons, keeping only those that are actually used in the component
+  BookOpen, Shield, Code, Bot, Microscope, LayoutTemplate,
+  Heart, Share2, MessageCircle, ThumbsUp, XCircle, Calendar, User, // Added Calendar and User as they are used
 } from 'lucide-react';
 
 // --- Security & PWA Notes for Client-Side React Component ---
@@ -167,7 +169,90 @@ const initialBlogPosts = [
   },
 ];
 
-// Blog Component
+
+// --- BlogPostCard Component (New) ---
+// This component encapsulates the logic for a single blog post card,
+// including its own useRef and useInView hooks for individual animation.
+const BlogPostCard = ({ post, index, sessionUserId, openModal, handlePostReaction, cardVariants }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.2 });
+
+  return (
+    <motion.div
+      ref={ref}
+      key={post.id}
+      className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-start border border-gray-700 cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+      variants={cardVariants}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => openModal(post)} // Open modal on card click
+    >
+      <div className="flex items-center space-x-2 mb-3 text-gray-400 text-sm">
+        {post.icon}
+        <span className="font-semibold text-gray-300">{post.category}</span>
+      </div>
+      <h3 className="text-xl font-bold text-gray-50 mb-3 leading-tight">{post.title}</h3>
+      <p className="text-gray-300 leading-relaxed text-sm mb-4 line-clamp-3">{post.excerpt}</p>
+
+      <div className="flex items-center space-x-4 text-gray-400 text-xs mt-auto pt-4 border-t border-gray-700 w-full">
+        <div className="flex items-center space-x-1">
+          <User size={16} />
+          <span>{post.author}</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Calendar size={16} />
+          <span>{post.date}</span>
+        </div>
+      </div>
+
+      {/* Post-level Reactions on Card (optional, can be moved to modal only) */}
+      <div className="flex items-center space-x-4 text-gray-400 text-sm mt-4">
+        <motion.button
+          className={`flex items-center space-x-1 ${post.postReactedBy.some(r => r.userId === sessionUserId && r.type === 'postLikes') ? 'text-blue-400' : 'hover:text-blue-300'}`}
+          onClick={(e) => { e.stopPropagation(); handlePostReaction(post.id, 'postLikes'); }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <ThumbsUp size={18} />
+          <span>{post.postLikes}</span>
+        </motion.button>
+        <motion.button
+          className={`flex items-center space-x-1 ${post.postReactedBy.some(r => r.userId === sessionUserId && r.type === 'postLoves') ? 'text-red-400' : 'hover:text-red-300'}`}
+          onClick={(e) => { e.stopPropagation(); handlePostReaction(post.id, 'postLoves'); }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Heart size={18} />
+          <span>{post.postLoves}</span>
+        </motion.button>
+        <motion.button
+          className={`flex items-center space-x-1 hover:text-green-300`}
+          onClick={(e) => { e.stopPropagation(); handlePostReaction(post.id, 'postShares'); }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Share2 size={18} />
+          <span>{post.postShares}</span>
+        </motion.button>
+        <motion.button
+          className="flex items-center space-x-1 hover:text-purple-300 ml-auto"
+          onClick={(e) => { e.stopPropagation(); openModal(post); }} // Ensure modal opens
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <MessageCircle size={18} />
+          <span>{post.comments.length}</span>
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+};
+
+
+// --- Blog Component ---
 const Blog = () => {
   const sessionUserId = getSessionUserId(); // Get unique user ID for session
 
@@ -190,8 +275,10 @@ const Blog = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userNameForComment, setUserNameForComment] = useState(() => localStorage.getItem('blogCommentUserName') || "");
+  const [currentCommentText, setCurrentCommentText] = useState(""); // For new comment input
+  const [currentReplyText, setCurrentReplyText] = useState({}); // For reply inputs, keyed by commentId
 
-  // Error message for comments
+  // Error message for comments/replies
   const [commentErrorMessage, setCommentErrorMessage] = useState("");
 
   // Effect to save blog posts to localStorage whenever they change
@@ -208,6 +295,9 @@ const Blog = () => {
   const openModal = (post) => {
     setSelectedPost(post);
     setIsModalOpen(true);
+    setCommentErrorMessage(""); // Clear any error message when opening modal
+    setCurrentCommentText(""); // Clear comment input
+    setCurrentReplyText({}); // Clear all reply inputs
   };
 
   // Close modal handler
@@ -215,6 +305,8 @@ const Blog = () => {
     setIsModalOpen(false);
     setSelectedPost(null);
     setCommentErrorMessage(""); // Clear any error message when closing modal
+    setCurrentCommentText(""); // Clear comment input
+    setCurrentReplyText({}); // Clear all reply inputs
   };
 
   // Handle post-level reactions (likes, loves, shares)
@@ -294,7 +386,7 @@ const Blog = () => {
       )
     );
     setCommentErrorMessage("");
-    // Clear comment input after submission (handled in modal's textarea)
+    setCurrentCommentText(""); // Clear comment input after submission
   };
 
   // Handle reactions for a specific comment within a post
@@ -396,9 +488,7 @@ const Blog = () => {
       })
     );
     setCommentErrorMessage("");
-    // Clear the specific reply input field (if accessed via its ID)
-    const replyInput = document.getElementById(`reply-input-${parentCommentId}`);
-    if (replyInput) replyInput.value = '';
+    setCurrentReplyText(prev => ({ ...prev, [parentCommentId]: "" })); // Clear the specific reply input field
   };
 
 
@@ -447,83 +537,17 @@ const Blog = () => {
       </motion.h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {blogPosts.map((post, index) => {
-          const ref = useRef(null);
-          const inView = useInView(ref, { once: true, amount: 0.2 });
-
-          return (
-            <motion.div
-              ref={ref}
-              key={post.id}
-              className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-start border border-gray-700 cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-              variants={cardVariants}
-              initial="hidden"
-              animate={inView ? "visible" : "hidden"}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => openModal(post)} // Open modal on card click
-            >
-              <div className="flex items-center space-x-2 mb-3 text-gray-400 text-sm">
-                {post.icon}
-                <span className="font-semibold text-gray-300">{post.category}</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-50 mb-3 leading-tight">{post.title}</h3>
-              <p className="text-gray-300 leading-relaxed text-sm mb-4 line-clamp-3">{post.excerpt}</p>
-
-              <div className="flex items-center space-x-4 text-gray-400 text-xs mt-auto pt-4 border-t border-gray-700 w-full">
-                <div className="flex items-center space-x-1">
-                  <User size={16} />
-                  <span>{post.author}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Calendar size={16} />
-                  <span>{post.date}</span>
-                </div>
-              </div>
-
-              {/* Post-level Reactions on Card (optional, can be moved to modal only) */}
-              <div className="flex items-center space-x-4 text-gray-400 text-sm mt-4">
-                <motion.button
-                  className={`flex items-center space-x-1 ${post.postReactedBy.some(r => r.userId === sessionUserId && r.type === 'postLikes') ? 'text-blue-400' : 'hover:text-blue-300'}`}
-                  onClick={(e) => { e.stopPropagation(); handlePostReaction(post.id, 'postLikes'); }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <ThumbsUp size={18} />
-                  <span>{post.postLikes}</span>
-                </motion.button>
-                <motion.button
-                  className={`flex items-center space-x-1 ${post.postReactedBy.some(r => r.userId === sessionUserId && r.type === 'postLoves') ? 'text-red-400' : 'hover:text-red-300'}`}
-                  onClick={(e) => { e.stopPropagation(); handlePostReaction(post.id, 'postLoves'); }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Heart size={18} />
-                  <span>{post.postLoves}</span>
-                </motion.button>
-                <motion.button
-                  className={`flex items-center space-x-1 hover:text-green-300`}
-                  onClick={(e) => { e.stopPropagation(); handlePostReaction(post.id, 'postShares'); }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Share2 size={18} />
-                  <span>{post.postShares}</span>
-                </motion.button>
-                <motion.button
-                  className="flex items-center space-x-1 hover:text-purple-300 ml-auto"
-                  onClick={(e) => { e.stopPropagation(); openModal(post); }} // Ensure modal opens
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <MessageCircle size={18} />
-                  <span>{post.comments.length}</span>
-                </motion.button>
-              </div>
-            </motion.div>
-          );
-        })}
+        {blogPosts.map((post, index) => (
+          <BlogPostCard
+            key={post.id}
+            post={post}
+            index={index}
+            sessionUserId={sessionUserId}
+            openModal={openModal}
+            handlePostReaction={handlePostReaction}
+            cardVariants={cardVariants}
+          />
+        ))}
       </div>
 
       {/* Modal for Full Blog Post */}
@@ -613,175 +637,177 @@ const Blog = () => {
                 {/* User Name Input for Comments */}
                 <motion.input
                   type="text"
-                  placeholder="Your Name (optional)"
+                  placeholder="Your Name (for comment/reply)"
                   value={userNameForComment}
-                  onChange={(e) => {
-                    setUserNameForComment(e.target.value);
-                    if (commentErrorMessage) setCommentErrorMessage("");
-                  }}
-                  className="w-full p-3 rounded-lg bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6347] border border-gray-600 mb-3"
-                  whileFocus={{ boxShadow: "0px 0px 10px rgba(255,99,71,0.5)" }}
+                  onChange={(e) => setUserNameForComment(e.target.value)}
+                  className="w-full p-3 mb-4 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
                 />
 
-                {/* Comment Textarea */}
-                <textarea
-                  rows={4}
-                  placeholder="Write a comment..."
-                  className="w-full p-4 rounded-lg bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6347] border border-gray-600 resize-y"
-                  id={`comment-input-${selectedPost.id}`} // Unique ID for comment input
-                ></textarea>
-
-                {/* Error message display for comments */}
-                {commentErrorMessage && (
-                  <motion.p
-                    className="text-red-400 text-sm mt-2 text-center"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    {commentErrorMessage}
-                  </motion.p>
-                )}
-
-                {/* Submit Comment Button */}
-                <motion.button
-                  onClick={() => {
-                    const commentText = document.getElementById(`comment-input-${selectedPost.id}`).value;
-                    addCommentToPost(selectedPost.id, commentText);
+                {/* New Comment Input */}
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    addCommentToPost(selectedPost.id, currentCommentText);
                   }}
-                  className="mt-4 w-full py-3 bg-[#FF6347] text-white font-semibold rounded-lg shadow-md hover:bg-[#CD5C5C] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#FF6347] focus:ring-opacity-75 transform active:scale-98"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="mb-8"
                 >
-                  Post Comment
-                </motion.button>
-
-                {/* List of Comments */}
-                <ul className="mt-8 space-y-6">
-                  {selectedPost.comments.length === 0 && (
-                    <motion.li
-                      className="text-gray-400 text-center py-4 rounded-md bg-gray-700 border border-gray-600"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      No comments yet. Be the first to share your thoughts!
-                    </motion.li>
+                  <textarea
+                    placeholder="Write your comment..."
+                    value={currentCommentText}
+                    onChange={(e) => setCurrentCommentText(e.target.value)}
+                    rows="4"
+                    className="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                  ></textarea>
+                  {commentErrorMessage && (
+                    <p className="text-red-400 text-sm mt-2">{commentErrorMessage}</p>
                   )}
-                  <AnimatePresence>
-                    {selectedPost.comments.map((comment) => (
-                      <motion.li
-                        key={comment.id}
-                        className="bg-gray-700 p-4 rounded-lg shadow-sm border border-gray-600 break-words flex flex-col"
-                        variants={commentItemVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                      >
-                        <div className="flex items-center mb-2">
-                          <User size={18} className="text-gray-400 mr-2" />
-                          <p className="font-semibold text-gray-200">{comment.author}</p>
-                        </div>
-                        <p className="text-gray-200 leading-relaxed mb-3">{comment.content}</p>
+                  <motion.button
+                    type="submit"
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Post Comment
+                  </motion.button>
+                </form>
 
-                        {/* Comment Reaction Section */}
-                        <div className="flex items-center space-x-4 text-gray-400 text-sm mt-auto border-t border-gray-600 pt-3">
-                          <motion.button
-                            className={`flex items-center space-x-1 ${comment.reactedBy.some(r => r.userId === sessionUserId && r.type === 'likes') ? 'text-blue-400' : 'hover:text-blue-300'}`}
-                            onClick={() => handleCommentReaction(selectedPost.id, comment.id, 'likes')}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <ThumbsUp size={18} />
-                            <span>{comment.likes}</span>
-                          </motion.button>
-                          <motion.button
-                            className={`flex items-center space-x-1 ${comment.reactedBy.some(r => r.userId === sessionUserId && r.type === 'loves') ? 'text-red-400' : 'hover:text-red-300'}`}
-                            onClick={() => handleCommentReaction(selectedPost.id, comment.id, 'loves')}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Heart size={18} />
-                            <span>{comment.loves}</span>
-                          </motion.button>
-                          <motion.button
-                            className={`flex items-center space-x-1 hover:text-green-300`}
-                            onClick={() => handleCommentReaction(selectedPost.id, comment.id, 'shares')}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Share2 size={18} />
-                            <span>{comment.shares}</span>
-                          </motion.button>
-                          <motion.button
-                            className="flex items-center space-x-1 hover:text-purple-300 ml-auto"
-                            onClick={() => toggleReplyInputForComment(selectedPost.id, comment.id)}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <MessageCircle size={18} />
-                            <span>Reply</span>
-                          </motion.button>
-                        </div>
+                {/* Existing Comments List */}
+                <AnimatePresence mode="popLayout">
+                  {selectedPost.comments.length > 0 ? (
+                    <div className="space-y-6">
+                      {selectedPost.comments.map((comment) => (
+                        <motion.div
+                          key={comment.id}
+                          className="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-md"
+                          variants={commentItemVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                        >
+                          <div className="flex items-center space-x-2 text-gray-400 text-sm mb-2">
+                            <User size={16} />
+                            <span className="font-semibold text-gray-300">{comment.author}</span>
+                            <span className="text-xs opacity-75">
+                              (ID: {comment.commentedBy.substring(0, 8)}...)
+                            </span>
+                          </div>
+                          <p className="text-gray-200 leading-relaxed text-sm mb-3">
+                            {comment.content}
+                          </p>
 
-                        {/* Reply Input Section */}
-                        <AnimatePresence>
-                          {comment.showReplyInput && (
-                            <motion.div
-                              className="mt-4 pt-4 border-t border-gray-600"
-                              variants={replyInputVariants}
-                              initial="hidden"
-                              animate="visible"
-                              exit="hidden"
+                          {/* Comment Reactions */}
+                          <div className="flex items-center space-x-4 text-gray-400 text-xs mt-3 border-t border-gray-700 pt-3">
+                            <motion.button
+                              className={`flex items-center space-x-1 ${comment.reactedBy.some(r => r.userId === sessionUserId && r.type === 'likes') ? 'text-blue-400' : 'hover:text-blue-300'}`}
+                              onClick={() => handleCommentReaction(selectedPost.id, comment.id, 'likes')}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
                             >
-                              <textarea
-                                rows={2}
-                                placeholder={`Reply to ${comment.author}...`}
-                                className="w-full p-3 rounded-lg bg-gray-600 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6347] border border-gray-500 resize-y text-sm"
-                                id={`reply-input-${comment.id}`} // Unique ID for each reply textarea
-                              ></textarea>
-                              <motion.button
-                                onClick={() => {
-                                  const replyText = document.getElementById(`reply-input-${comment.id}`).value;
-                                  addReplyToComment(selectedPost.id, comment.id, replyText);
-                                }}
-                                className="mt-2 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 text-sm"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                Post Reply
-                              </motion.button>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                              <ThumbsUp size={16} />
+                              <span>{comment.likes}</span>
+                            </motion.button>
+                            <motion.button
+                              className={`flex items-center space-x-1 ${comment.reactedBy.some(r => r.userId === sessionUserId && r.type === 'loves') ? 'text-red-400' : 'hover:text-red-300'}`}
+                              onClick={() => handleCommentReaction(selectedPost.id, comment.id, 'loves')}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <Heart size={16} />
+                              <span>{comment.loves}</span>
+                            </motion.button>
+                            <motion.button
+                              className="flex items-center space-x-1 hover:text-green-300"
+                              onClick={() => handleCommentReaction(selectedPost.id, comment.id, 'shares')}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <Share2 size={16} />
+                              <span>{comment.shares}</span>
+                            </motion.button>
+                            <motion.button
+                              className="flex items-center space-x-1 hover:text-purple-300 ml-auto"
+                              onClick={() => toggleReplyInputForComment(selectedPost.id, comment.id)}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <MessageCircle size={16} />
+                              <span>Reply</span>
+                            </motion.button>
+                          </div>
 
-                        {/* Replies List */}
-                        {comment.replies.length > 0 && (
-                          <ul className="mt-4 ml-8 space-y-3 border-l-2 border-gray-600 pl-4">
-                            <p className="text-gray-400 text-xs italic mb-2">{comment.replies.length} replies</p>
-                            <AnimatePresence>
+                          {/* Reply Input Section */}
+                          <AnimatePresence>
+                            {comment.showReplyInput && (
+                              <motion.div
+                                className="mt-4"
+                                variants={replyInputVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="hidden"
+                              >
+                                <form
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    addReplyToComment(selectedPost.id, comment.id, currentReplyText[comment.id] || "");
+                                  }}
+                                  className="flex flex-col space-y-2"
+                                >
+                                  <textarea
+                                    id={`reply-input-${comment.id}`}
+                                    placeholder="Write your reply..."
+                                    value={currentReplyText[comment.id] || ""}
+                                    onChange={(e) => setCurrentReplyText(prev => ({ ...prev, [comment.id]: e.target.value }))}
+                                    rows="2"
+                                    className="w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-y"
+                                  ></textarea>
+                                  <motion.button
+                                    type="submit"
+                                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 self-end"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                  >
+                                    Post Reply
+                                  </motion.button>
+                                </form>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          {/* Replies List */}
+                          {comment.replies.length > 0 && (
+                            <div className="mt-4 pl-6 border-l border-gray-600 space-y-3">
+                              <h5 className="text-md font-semibold text-gray-300 mb-2">Replies ({comment.replies.length})</h5>
                               {comment.replies.map((reply) => (
-                                <motion.li
+                                <motion.div
                                   key={reply.id}
-                                  className="bg-gray-600 p-3 rounded-lg shadow-sm border border-gray-500 break-words"
-                                  variants={commentItemVariants}
+                                  className="bg-gray-700 p-3 rounded-lg border border-gray-600 text-sm"
+                                  variants={commentItemVariants} // Re-using comment item variants for replies
                                   initial="hidden"
                                   animate="visible"
                                   exit="exit"
                                 >
-                                  <div className="flex items-center mb-1">
-                                    <User size={16} className="text-gray-400 mr-2" />
-                                    <p className="font-semibold text-gray-300 text-sm">{reply.author}</p>
+                                  <div className="flex items-center space-x-2 text-gray-400 text-xs mb-1">
+                                    <User size={14} />
+                                    <span className="font-medium text-gray-300">{reply.author}</span>
+                                    <span className="opacity-75">(ID: {reply.commentedBy.substring(0, 8)}...)</span>
                                   </div>
-                                  <p className="text-gray-300 text-sm leading-relaxed">{reply.content}</p>
-                                </motion.li>
+                                  <p className="text-gray-200 leading-relaxed">
+                                    {reply.content}
+                                  </p>
+                                </motion.div>
                               ))}
-                            </AnimatePresence>
-                          </ul>
-                        )}
-                      </motion.li>
-                    ))}
-                  </AnimatePresence>
-                </ul>
+                            </div>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-center py-4">No comments yet. Be the first to comment!</p>
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
           </motion.div>
