@@ -1,13 +1,13 @@
 import React from 'react';
 //import Auth from './components/Auth';
-import Blog from './components/Blog';
+//import Blog from './components/Blog';
 import Chatbox from './components/Chatbox';
 import Comments from './components/Comments';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import NewsletterForm from './components/NewsletterForm';
-import Projects from './components/Projects';
+//import Projects from './components/Projects';
 //import Quiz from './components/Quiz';
 import Skills from './components/Skills';
 import VideoSection from './components/VideoSection';
@@ -18,12 +18,12 @@ const App = () => {
       <Header />
       <main>
         
-        <Blog />
+        //<Blog />
         <Chatbox />
         <Comments />
         <LanguageSwitcher />
         <NewsletterForm />
-        <Projects />
+        //<Projects />
         
         <Skills />
         <VideoSection />
