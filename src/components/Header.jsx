@@ -145,6 +145,45 @@ function App() {
 
       {/* Header Section */}
       <Header />
+       
+       <nav className="flex space-x-4">
+  <motion.a href="#home" className="hover:text-[#FFD700] transition-colors flex items-center px-3 py-2 rounded-md"
+    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+    whileTap={{ scale: 0.95 }}>
+    <Home size={18} className="mr-1" /> Home
+  </motion.a>
+  <motion.a href="#skills" className="hover:text-[#FFD700] transition-colors flex items-center px-3 py-2 rounded-md"
+    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+    whileTap={{ scale: 0.95 }}>
+    <GraduationCap size={18} className="mr-1" /> Skills
+  </motion.a>
+  <motion.a href="#projects" className="hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md"
+    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+    whileTap={{ scale: 0.95 }}>
+    Projects
+  </motion.a>
+  <motion.a href="#blogs" className="hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md"
+    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+    whileTap={{ scale: 0.95 }}>
+    Blog
+  </motion.a>
+  <motion.a href="#quiz" className="hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md"
+    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+    whileTap={{ scale: 0.95 }}>
+    Quiz
+  </motion.a>
+  <motion.a href="#video" className="hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md"
+    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+    whileTap={{ scale: 0.95 }}>
+    Video
+  </motion.a>
+  <motion.a href="#newsletter" className="hover:text-[#FFD700] transition-colors px-3 py-2 rounded-md"
+    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+    whileTap={{ scale: 0.95 }}>
+    Newsletter
+  </motion.a>
+</nav>
+
 
       {/* Main Content */}
       <main className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 p-4 pt-8">

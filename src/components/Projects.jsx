@@ -3,17 +3,19 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import {
-  Code, Shield, Bot, Microscope, LayoutTemplate, PenTool, Lock,
-  Palette // Icons for various project types
-} from 'lucide-react'; // Removed unused icons like Globe, Server, Database from import
+  Shield, Bot, Microscope
+} from 'lucide-react';
 
-// --- ProjectCard Component (New) ---
-// This component encapsulates the logic for a single project card,
-// including its own useRef and useInView hooks for individual animation.
-const ProjectCard = ({ project, index, cardVariants }) => {
+// --- Card animation variants ---
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0 },
+};
+
+// --- Individual Card ---
+const ProjectCard = ({ project, index }) => {
   const ref = useRef(null);
-  // useInView hook is correctly called at the top level of ProjectCard component
-  const inView = useInView(ref, { once: true, amount: 0.2 }); // Trigger when 20% of item is visible
+  const inView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
     <motion.div
@@ -22,9 +24,8 @@ const ProjectCard = ({ project, index, cardVariants }) => {
       className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-start border border-gray-700 cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
       variants={cardVariants}
       initial="hidden"
-      // Animate based on the 'inView' state from useInView
       animate={inView ? "visible" : "hidden"}
-      transition={{ delay: index * 0.15 }} // Staggered animation
+      transition={{ delay: index * 0.15 }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
@@ -48,89 +49,38 @@ const ProjectCard = ({ project, index, cardVariants }) => {
   );
 };
 
-
-// Projects Component
+// --- Main Projects Component ---
 const Projects = () => {
-  // Define a list of example projects
-  const projectsData = [
+  const projects = [
     {
-      title: "SecureAuth Web Portal",
-      description: "A robust web application demonstrating secure user authentication, role-based access control, and data encryption.",
-      category: "Cybersecurity & Ethical Hacking",
-      tech: ["React", "Node.js", "Express", "MongoDB", "JWT", "OAuth"],
-      icon: <Lock size={24} className="text-[#FFD700]" /> // Gold accent
+      title: "AI Cyber Sentinel",
+      description: "An AI-powered system that automatically detects and neutralizes cyber threats in real-time.",
+      icon: <Shield size={20} className="text-[#FFD700]" />,
+      tech: ["Python", "TensorFlow", "Snort"],
     },
     {
-      title: "E-commerce Web Scraper",
-      description: "Python-based web scraper to collect product data (prices, reviews, availability) from major e-commerce platforms.",
-      category: "Web Scraping & Automation",
-      tech: ["Python", "BeautifulSoup", "Scrapy", "Selenium"],
-      icon: <Bot size={24} className="text-[#87CEEB]" /> // SkyBlue accent
+      title: "BotNet Tracker",
+      description: "Tracks and maps botnet activity using honeypots and global sensors.",
+      icon: <Bot size={20} className="text-[#00FFFF]" />,
+      tech: ["Go", "Elasticsearch", "Grafana"],
     },
     {
-      title: "Portfolio Website Builder",
-      description: "An interactive platform allowing users to drag-and-drop components to build personalized online portfolios with responsive designs.",
-      category: "Web Development & Design",
-      tech: ["React", "Tailwind CSS", "Drag-and-Drop API", "Firebase"],
-      icon: <Palette size={24} className="text-[#98FB98]" /> // PaleGreen accent
-    },
-    {
-      title: "Digital Forensics Toolkit",
-      description: "A command-line tool for basic digital forensics tasks, including file carving, metadata extraction, and deleted file recovery.",
-      category: "Computer Forensics",
-      tech: ["Python", "Forensics Libraries", "CLI"],
-      icon: <Microscope size={24} className="text-[#FFA07A]" /> // LightSalmon accent
-    },
-    {
-      title: "Automated CV & Cover Letter Generator",
-      description: "Generates professional CVs and cover letters from user input, with various customizable templates and export options.",
-      category: "Writing & CV Templates",
-      tech: ["React", "HTML2PDF", "Template Engine"],
-      icon: <PenTool size={24} className="text-[#ADD8E6]" /> // LightBlue accent
-    },
-    {
-      title: "Cyber Threat Intelligence Dashboard",
-      description: "Visualizes real-time cyber threat data from open-source intelligence feeds, offering insights into attack trends and vulnerabilities.",
-      category: "Cybersecurity & Ethical Hacking",
-      tech: ["React", "D3.js", "REST API", "Elasticsearch"],
-      icon: <Shield size={24} className="text-[#FFD700]" /> // Gold accent
+      title: "Dark Web Scanner",
+      description: "A tool for monitoring illicit activity on the dark web using AI NLP and Tor.",
+      icon: <Microscope size={20} className="text-[#FF69B4]" />,
+      tech: ["Node.js", "MongoDB", "Tor"],
     },
   ];
 
-  // Variants for section title animation
-  const titleVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-  };
-
-  // Variants for individual project cards animation (scroll-in effect)
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
-
   return (
-    <div className="w-full max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <motion.h2
-        className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF6347] to-[#CD5C5C] text-center mb-12"
-        variants={titleVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        Our Projects
-      </motion.h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projectsData.map((project, index) => (
-          <ProjectCard
-            key={index} // Using index as key is generally fine for static lists without reordering
-            project={project}
-            index={index}
-            cardVariants={cardVariants}
-          />
+    <section className="py-10 px-4 sm:px-8 lg:px-16 bg-black text-white min-h-screen">
+      <h2 className="text-4xl font-bold mb-10 text-center">Projects</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {projects.map((project, index) => (
+          <ProjectCard key={index} project={project} index={index} />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -1,7 +1,7 @@
 // Placeholder content for Quiz.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Code, Shield, HelpCircle, CheckCircle, XCircle, Share2, User, Play } from 'lucide-react';
+import { Award, CheckCircle, Share2} from 'lucide-react';
 
 // Helper function to get a unique user ID for the current browser session
 const getSessionUserId = () => {
