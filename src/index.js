@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./App.css";
-
+import { register } from './service-worker-registration';
 // Replace with your Google Analytics tracking ID
 const GA_TRACKING_ID = "G-XXXXXXXXXX";
 
@@ -56,3 +56,5 @@ root.render(
     <Root />
   </React.StrictMode>
 );
+
+register();
