@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/Madeoftech/static/css/main.1694c03b.css",
+    "main.js": "/Madeoftech/static/js/main.d3f52819.js",
+    "service-worker.js": "/Madeoftech/service-worker.js",
+    "index.html": "/Madeoftech/index.html",
+    "main.1694c03b.css.map": "/Madeoftech/static/css/main.1694c03b.css.map",
+    "main.d3f52819.js.map": "/Madeoftech/static/js/main.d3f52819.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1694c03b.css",
+    "static/js/main.d3f52819.js"
+  ]
+}
